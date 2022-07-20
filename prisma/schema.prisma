@@ -9,5 +9,81 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+enum Status{
+  OpenForFulltime
+  OpenForParttime
+  OpenForCorporation
+  NotOpen
+}
 
 
+model User{
+  id  String @id @default(auto())  @map("_id") @db.ObjectId
+  name String
+  contact Contact?
+  status Status
+  user_skills UserSkills[]
+  show_case Json
+  info Userinfo?
+}
+
+model Userinfo{
+    id  String @id @default(auto()) @map("_id") @db.ObjectId
+    events EventItem[]
+    userId String @unique @db.ObjectId
+    user User @relation(fields: [userId], references: [id])
+    assets Json?
+}
+
+model EventItem{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  category String @default("unclassified")
+  start_time String
+  end_time String
+  userId String @db.ObjectId
+  Userinfo Userinfo @relation(fields: [userId], references: [id])
+  title String
+  description String
+  assets Json?
+}
+
+
+
+model Contact{
+  id  String @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  tel String? @unique
+  userId String @unique @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
+}
+
+
+model UserSkills{
+   id  String @id @default(auto()) @map("_id") @db.ObjectId
+   skillTitle String
+   skillImg String
+   skillDes String
+   skillPid String
+   userId String
+   user User @relation(fields: [userId], references: [id])
+   userScore Int
+}
+
+
+
+
+
+
+
+
+
+
+
+model SkillItem{
+  id  String @id @default(auto()) @map("_id") @db.ObjectId
+  title String 
+  pid String @default("root")
+  description String
+  img String
+  score Int
+}
